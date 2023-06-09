@@ -1,1 +1,1 @@
-# rps-discord-bot
+# subeom-discord-bot
