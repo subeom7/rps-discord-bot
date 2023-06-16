@@ -53,16 +53,26 @@ client.on('messageCreate', async message => {
         const question = message.content.slice('/ask'.length).trim();
 
         try {
+
+            //check if the prompt contains korean
+            function containsKorean(text) {
+                const hangul = /[\uAC00-\uD7A3]/g;  // This is a regular expression that matches Hangul characters
+                return hangul.test(text);
+            }
+            
             // Set busy flag
             botIsBusy = true;
             
             const chapGPT = async (prompt) => {
+                const promptToUse = containsKorean(prompt) ? prompt + "반말로 대답해줘. 그라고 사람처럼 대답해." : prompt;
+            
                 const response = await openai.createChatCompletion({
                     model: "gpt-3.5-turbo",
-                    messages: [{'role':'assistant', 'content': prompt}] 
+                    messages: [{'role':'assistant', 'content': promptToUse}],
+                    temperature: 0.9,
                 });
                 return response["data"]["choices"][0]["message"]["content"];
-            };
+            };            
 
             let response = await chapGPT(question);
             message.channel.send(response);
